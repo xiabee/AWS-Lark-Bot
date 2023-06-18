@@ -1,0 +1,63 @@
+package main
+
+import (
+	"AWS-Lark-Bot/libs"
+	"context"
+	"encoding/json"
+	"log"
+	"net/http"
+	"os"
+	"strings"
+
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+)
+
+type Message struct {
+	Message string `json:"Message"`
+}
+
+func lambdaHandler(ctx context.Context, snsEvent events.SNSEvent) error {
+	// 提取消息内容
+	message := snsEvent.Records[0].SNS.Message
+
+	// 飞书机器人的 webhook URL
+	secret := os.Getenv("WEBHOOK_KEY")
+	webhookURL := "https://open.feishu.cn/open-apis/bot/v2/hook/" + secret
+
+	event, err := libs.ProcessJSON(message)
+	// alert message
+	if err != nil {
+		log.Printf("Failed to load message: %v", err)
+		return err
+	}
+	var data libs.CardMessage
+	// card message struct
+
+	libs.ProcCard(event, &data)
+	payloadBytes, err := json.Marshal(data)
+	if err != nil {
+		log.Printf("Failed to convert message body: %v", err)
+		return err
+	}
+
+	// 发送 POST 请求给飞书机器人
+	resp, err := http.Post(webhookURL, "application/json", strings.NewReader(string(payloadBytes)))
+	if err != nil {
+		log.Printf("An error occurred while sending the request to the Feishu robot: %v", err)
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusOK {
+		log.Println("The message has been successfully sent to the Feishu robot")
+	} else {
+		log.Printf("An error occurred while sending a message to the Feishu robot, status code: %d", resp.StatusCode)
+	}
+
+	return nil
+}
+
+func main() {
+	lambda.Start(lambdaHandler)
+}
