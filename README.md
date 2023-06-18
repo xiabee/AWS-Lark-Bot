@@ -1,7 +1,7 @@
 # AWS-Lark-Bot
 ## 简介
 
-通过 `AWS  Lambda` 函数将 `AWS SNS` 消息发送给飞书。
+通过 `AWS Lambda` 函数将 `AWS SNS` 消息发送给飞书。
 
 
 
