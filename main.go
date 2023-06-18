@@ -18,10 +18,10 @@ type Message struct {
 }
 
 func lambdaHandler(ctx context.Context, snsEvent events.SNSEvent) error {
-	// 提取消息内容
+	// get the SNS message
 	message := snsEvent.Records[0].SNS.Message
 
-	// 飞书机器人的 webhook URL
+	// Lark bot webhook URL
 	secret := os.Getenv("WEBHOOK_KEY")
 	webhookURL := "https://open.feishu.cn/open-apis/bot/v2/hook/" + secret
 
@@ -41,7 +41,7 @@ func lambdaHandler(ctx context.Context, snsEvent events.SNSEvent) error {
 		return err
 	}
 
-	// 发送 POST 请求给飞书机器人
+	// POST to Lark Bot
 	resp, err := http.Post(webhookURL, "application/json", strings.NewReader(string(payloadBytes)))
 	if err != nil {
 		log.Printf("An error occurred while sending the request to the Feishu robot: %v", err)
