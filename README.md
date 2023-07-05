@@ -1,29 +1,26 @@
-# SNS-Integration
+# AWS-Lark-Bot
+
 ## 简介
 
-通过 `AWS Lambda` 函数将 `AWS SNS` 消息发送给飞书。
+通过 `AWS Lambda` 以及其他组件与飞书进行交互
 
 
 
-## 使用方法
+## 通用使用方法
 
 ### 编译 GO 文件
 
- ```bash
- git clone https://github.com/xiabee/AWS-Lark-Bot.git && cd AWS-Lark-Bot
- go mod download
- 
- GOOS=linux GOARCH=amd64 go build -o main .
- zip main.zip main
- ```
+```bash
+go mod download
+GOOS=linux GOARCH=amd64 go build -o main .
+zip main.zip main
+```
 
 
 
 ### 上传 Lambda 函数
 
 将刚刚打包出的 main.zip 上传至 AWS Lambda 中。
-
-
 
 ### 设置环境变量
 
@@ -33,6 +30,6 @@
 
 
 
-### 设置 SNS 关联
+## 特殊使用方法
 
-在 AWS 中将 SNS 消息于刚刚的 Lambda 函数关联
+见各目录的 README

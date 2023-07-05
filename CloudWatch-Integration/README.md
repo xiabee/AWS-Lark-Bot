@@ -1,7 +1,8 @@
-# SNS-Integration
+# CloudWatch-Integration
+
 ## 简介
 
-通过 `AWS Lambda` 函数将 `AWS SNS` 消息发送给飞书。
+通过 Lambda 函数实现监听 CloudWatchLogs，特定事件发生时发送飞书消息
 
 
 
@@ -9,13 +10,11 @@
 
 ### 编译 GO 文件
 
- ```bash
- git clone https://github.com/xiabee/AWS-Lark-Bot.git && cd AWS-Lark-Bot
- go mod download
- 
- GOOS=linux GOARCH=amd64 go build -o main .
- zip main.zip main
- ```
+```bash
+go mod download
+GOOS=linux GOARCH=amd64 go build -o main .
+zip main.zip main
+```
 
 
 
@@ -33,6 +32,6 @@
 
 
 
-### 设置 SNS 关联
+### 设置 CloudWatch 关联
 
-在 AWS 中将 SNS 消息于刚刚的 Lambda 函数关联
+在 AWS 中将 CloudWatchLogs 作为 Lambda 的触发器
