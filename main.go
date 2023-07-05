@@ -1,7 +1,7 @@
 package main
 
 import (
-	"AWS-Lark-Bot/libs"
+	"AWS-Lark-Bot/lib"
 	"context"
 	"encoding/json"
 	"log"
@@ -25,16 +25,16 @@ func lambdaHandler(ctx context.Context, snsEvent events.SNSEvent) error {
 	secret := os.Getenv("WEBHOOK_KEY")
 	webhookURL := "https://open.feishu.cn/open-apis/bot/v2/hook/" + secret
 
-	event, err := libs.ProcessJSON(message)
+	event, err := lib.ProcessJSON(message)
 	// alert message
 	if err != nil {
 		log.Printf("Failed to load message: %v", err)
 		return err
 	}
-	var data libs.CardMessage
+	var data lib.CardMessage
 	// card message struct
 
-	libs.ProcCard(event, &data)
+	lib.ProcCard(event, &data)
 	payloadBytes, err := json.Marshal(data)
 	if err != nil {
 		log.Printf("Failed to convert message body: %v", err)

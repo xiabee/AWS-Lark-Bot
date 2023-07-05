@@ -1,4 +1,4 @@
-package libs
+package lib
 
 func ProcCard(event Event, data *CardMessage) {
 	data.MsgType = "interactive"

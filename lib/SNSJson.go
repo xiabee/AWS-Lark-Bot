@@ -1,4 +1,4 @@
-package libs
+package lib
 
 type KV struct {
 	Key   string `json:"key"`
