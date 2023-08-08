@@ -34,7 +34,12 @@ func lambdaHandler(ctx context.Context, snsEvent events.SNSEvent) error {
 	var data lib.CardMessage
 	// card message struct
 
-	lib.ProcCard(event, &data)
+	serverity := lib.ProcCard(event, &data)
+	if serverity < 4.0 {
+		return nil
+	}
+	// if serverity < 4.0, don't send message to Lark Bot
+
 	payloadBytes, err := json.Marshal(data)
 	if err != nil {
 		log.Printf("Failed to convert message body: %v", err)

@@ -12,7 +12,18 @@ func blocked(flag bool) string {
 	}
 }
 
-func ProcElement(event Event, element *Element) {
+func alertLevel(alertSeverity float64) string {
+	if alertSeverity >= 7.0 {
+		return "High"
+	} else if alertSeverity >= 4.0 {
+		return "Medium"
+	} else {
+		return "Low"
+	}
+}
+
+// ProcElement get the servertiy of the alert
+func ProcElement(event Event, element *Element) float64 {
 	element.Tag = "div"
 	element.Text.Tag = "lark_md"
 
@@ -28,7 +39,10 @@ func ProcElement(event Event, element *Element) {
 	}
 	// Load EKS information
 
+	alertSeverity := event.Detail.Severity
+
 	element.Text.Content = "[+] ** Type**:   " + event.DetailType + "\n" +
+		"[+] ** Severity**:    " + alertLevel(alertSeverity) + " " + strconv.FormatFloat(alertSeverity, 'f', -1, 64) + "\n" +
 		"[+] ** Time**:    " + event.Time + "\n" +
 		"[+] ** Account**:    " + event.Account + "\n" +
 		"[+] ** Region**:    " + event.Region + "\n" +
@@ -43,4 +57,6 @@ func ProcElement(event Event, element *Element) {
 		"[+] ** AsnOrg**:    " + event.Detail.Service.Action.PortProbeAction.PortProbeDetails[0].RemoteIpDetails.Organization.AsnOrg + "\n" +
 		"[+] ** Country**:    " + event.Detail.Service.Action.PortProbeAction.PortProbeDetails[0].RemoteIpDetails.Country.CountryName + "\n" +
 		"[+] ** Blocked**:    " + blocked(event.Detail.Service.Action.PortProbeAction.Blocked) + "\n"
+
+	return alertSeverity
 }

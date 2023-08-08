@@ -64,7 +64,7 @@ type Event struct {
 		Type          string   `json:"type"`
 		Resource      Resource `json:"resource"`
 		Service       Service  `json:"service"`
-		Severity      int      `json:"severity"`
+		Severity      float64  `json:"severity"`
 		CreatedAt     string   `json:"createdAt"`
 		UpdatedAt     string   `json:"updatedAt"`
 		Title         string   `json:"title"`
