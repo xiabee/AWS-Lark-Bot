@@ -7,10 +7,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -22,12 +22,14 @@ type Message struct {
 }
 
 func lambdaHandler(ctx context.Context, snsEvent events.SNSEvent) error {
-	// get the SNS message
-	message := snsEvent.Records[0].SNS.Message
-
 	// Lark bot webhook URL
 	secret := os.Getenv("WEBHOOK_KEY")
+	// alert level
+	alertlevel := os.Getenv("ALERT_LEVEL")
 	webhookURL := "https://open.feishu.cn/open-apis/bot/v2/hook/" + secret
+
+	// get the SNS message
+	message := snsEvent.Records[0].SNS.Message
 
 	event, err := lib.ProcessJSON(message)
 	// alert message
@@ -42,10 +44,14 @@ func lambdaHandler(ctx context.Context, snsEvent events.SNSEvent) error {
 	fmt.Println("serverity: ", serverity)
 	lib.ProcCard(event, &data, serverity)
 
-	//if serverity < 0 {
-	//	return nil
-	//}
-	// if serverity < 4.0, don't send message to Lark Bot
+	threshold, err := strconv.ParseFloat(alertlevel, 64)
+	if err != nil {
+		return err
+	}
+	if serverity < threshold {
+		return nil
+	}
+	// if serverity < threshold, don't send message to Lark Bot
 
 	payloadBytes, err := json.Marshal(data)
 	if err != nil {
@@ -61,13 +67,13 @@ func lambdaHandler(ctx context.Context, snsEvent events.SNSEvent) error {
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
-	fmt.Println("resp: ", string(body))
-	//if resp.StatusCode == http.StatusOK {
-	//	log.Println("The message has been successfully sent to the Feishu robot")
-	//} else {
-	//	log.Printf("An error occurred while sending a message to the Feishu robot, status code: %d", resp.StatusCode)
-	//}
+	//body, err := io.ReadAll(resp.Body)
+	//fmt.Println("resp: ", string(body))
+	if resp.StatusCode == http.StatusOK {
+		log.Println("The message has been successfully sent to the Feishu robot")
+	} else {
+		log.Printf("An error occurred while sending a message to the Feishu robot, status code: %d", resp.StatusCode)
+	}
 
 	return nil
 }
