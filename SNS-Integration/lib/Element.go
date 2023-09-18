@@ -1,7 +1,8 @@
 package lib
 
 import (
-	"strconv"
+	"AWS-Lark-Bot/resources"
+	"fmt"
 )
 
 func blocked(flag bool) string {
@@ -23,40 +24,25 @@ func alertLevel(alertSeverity float64) string {
 }
 
 // ProcElement get the servertiy of the alert
-func ProcElement(event Event, element *Element) float64 {
+func ProcElement(event resources.Event, element *resources.Element) float64 {
 	element.Tag = "div"
 	element.Text.Tag = "lark_md"
+	resourceType, ok := event.Detail.Resource["resourceType"].(string)
+	if !ok {
+		fmt.Println("Missing or invalid resourceType")
+		return 0
+	}
 
-	var kv []KV = nil
-	for _, tags := range event.Detail.Resource.InstanceDetails.Tags {
-		if tags.Key == "servicetype" || tags.Key == "eks:cluster-name" || tags.Key == "component" || tags.Key == "tenant" {
-			kv = append(kv, tags)
+	fmt.Println("ResourceType: ", resourceType)
+	switch resourceType {
+	case "Instance":
+		err := ProcEC2(event, element)
+		if err != nil {
+			fmt.Println("Failed to process EC2 alert: ", err)
+			return 0
 		}
+	default:
+		return 0
 	}
-	eksInfo := ""
-	for _, tags := range kv {
-		eksInfo = eksInfo + "  [-] **" + tags.Key + "**:    " + tags.Value + "\n"
-	}
-	// Load EKS information
-
-	alertSeverity := event.Detail.Severity
-
-	element.Text.Content = "[+] ** Type**:   " + event.DetailType + "\n" +
-		"[+] ** Severity**:    " + alertLevel(alertSeverity) + " " + strconv.FormatFloat(alertSeverity, 'f', -1, 64) + "\n" +
-		"[+] ** Time**:    " + event.Time + "\n" +
-		"[+] ** Account**:    " + event.Account + "\n" +
-		"[+] ** Region**:    " + event.Region + "\n" +
-		"[+] ** Resource Type**:    " + event.Detail.Resource.ResourceType + "\n" +
-		"[+] ** ID**:    " + event.Detail.Resource.InstanceDetails.InstanceID + "\n" +
-		"[+] ** Launch Time**:    " + event.Detail.Resource.InstanceDetails.LaunchTime + "\n" +
-		"[+] ** EKS info**:\n" + eksInfo +
-		"[+] ** Action Type**:    " + event.Detail.Service.Action.ActionType + "\n" +
-		"[+] ** Description**:    " + event.Detail.Description + "\n" +
-		"[+] ** Local Port**:    " + strconv.Itoa(event.Detail.Service.Action.PortProbeAction.PortProbeDetails[0].LocalPortDetails.Port) + "\n" +
-		"[+] ** Remote IP**:    " + event.Detail.Service.Action.PortProbeAction.PortProbeDetails[0].RemoteIpDetails.IpAddressV4 + "\n" +
-		"[+] ** AsnOrg**:    " + event.Detail.Service.Action.PortProbeAction.PortProbeDetails[0].RemoteIpDetails.Organization.AsnOrg + "\n" +
-		"[+] ** Country**:    " + event.Detail.Service.Action.PortProbeAction.PortProbeDetails[0].RemoteIpDetails.Country.CountryName + "\n" +
-		"[+] ** Blocked**:    " + blocked(event.Detail.Service.Action.PortProbeAction.Blocked) + "\n"
-
-	return alertSeverity
+	return 0
 }

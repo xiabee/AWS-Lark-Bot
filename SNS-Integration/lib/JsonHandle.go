@@ -1,15 +1,16 @@
 package lib
 
 import (
+	"AWS-Lark-Bot/resources"
 	"encoding/json"
 )
 
-func ProcessJSON(jsonStr string) (Event, error) {
+func ProcessJSON(jsonStr string) (resources.Event, error) {
 
-	var event Event
+	var event resources.Event
 	err := json.Unmarshal([]byte(jsonStr), &event)
 	if err != nil {
-		return Event{}, err
+		return resources.Event{}, err
 	}
 	return event, nil
 }

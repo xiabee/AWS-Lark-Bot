@@ -2,6 +2,7 @@ package main
 
 import (
 	"AWS-Lark-Bot/lib"
+	"AWS-Lark-Bot/resources"
 	"context"
 	"encoding/json"
 	"log"
@@ -31,11 +32,11 @@ func lambdaHandler(ctx context.Context, snsEvent events.SNSEvent) error {
 		log.Printf("Failed to load message: %v", err)
 		return err
 	}
-	var data lib.CardMessage
+	var data resources.CardMessage
 	// card message struct
 
 	serverity := lib.ProcCard(event, &data)
-	if serverity < 4.0 {
+	if serverity < 0 {
 		return nil
 	}
 	// if serverity < 4.0, don't send message to Lark Bot

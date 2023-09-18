@@ -1,4 +1,4 @@
-package lib
+package resources
 
 //type Resource struct {
 //	ResourceType    string                 `json:"resourceType"`
@@ -9,27 +9,8 @@ type Service struct {
 	ServiceName string `json:"serviceName"`
 	DetectorID  string `json:"detectorId"`
 	Action      struct {
-		ActionType      string `json:"actionType"`
-		PortProbeAction struct {
-			PortProbeDetails []struct {
-				LocalPortDetails struct {
-					Port     int    `json:"port"`
-					PortName string `json:"portName"`
-				} `json:"localPortDetails"`
-				RemoteIpDetails struct {
-					IpAddressV4  string `json:"ipAddressV4"`
-					Organization struct {
-						AsnOrg string `json:"asnOrg"`
-						Org    string `json:"org"`
-					} `json:"organization"`
-					Country struct {
-						CountryName string `json:"countryName"`
-					} `json:"country"`
-				} `json:"remoteIpDetails"`
-			} `json:"portProbeDetails"`
-			Blocked bool `json:"blocked"`
-		} `json:"portProbeAction"`
-	} `json:"action"`
+		ActionType string `json:"actionType"`
+	}
 	ResourceRole string `json:"resourceRole"`
 }
 

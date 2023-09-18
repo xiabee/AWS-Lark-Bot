@@ -1,4 +1,4 @@
-package lib
+package resources
 
 type Element struct {
 	Tag  string `json:"tag"`
