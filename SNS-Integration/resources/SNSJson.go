@@ -1,10 +1,5 @@
 package resources
 
-//type Resource struct {
-//	ResourceType    string                 `json:"resourceType"`
-//	ResourceDetails map[string]interface{} `json:"resourceDetails"`
-//}
-
 type Service struct {
 	ServiceName string `json:"serviceName"`
 	DetectorID  string `json:"detectorId"`

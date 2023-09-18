@@ -2,16 +2,23 @@ package lib
 
 import "AWS-Lark-Bot/resources"
 
-func ProcCard(event resources.Event, data *resources.CardMessage) float64 {
+func ProcCard(event resources.Event, data *resources.CardMessage, serverity float64) {
 	data.MsgType = "interactive"
 	data.Card.Config.WideScreenMode = true
 	data.Card.Header.Title.Tag = "markdown"
-	data.Card.Header.Title.Content = event.Detail.Title
+	data.Card.Header.Title.Content = event.Detail.Type
 	data.Card.Header.Template = "blue"
 
-	var element resources.Element
-	serverity := ProcElement(event, &element)
-	data.Card.Elements = append(data.Card.Elements, element)
+	if serverity >= 7.0 {
+		data.Card.Header.Template = "red"
+	} else if serverity >= 4.0 {
+		data.Card.Header.Template = "yellow"
+	} else {
+		data.Card.Header.Template = "blue"
+	}
+	// make different color for different severity
 
-	return serverity
+	var element resources.Element
+	ProcElement(event, &element)
+	data.Card.Elements = append(data.Card.Elements, element)
 }

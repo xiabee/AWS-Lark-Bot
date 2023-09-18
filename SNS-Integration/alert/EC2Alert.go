@@ -1,10 +1,9 @@
-package lib
+package alert
 
 import (
 	"AWS-Lark-Bot/resources"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strconv"
 	"time"
 )
@@ -21,7 +20,6 @@ func ProcEC2(event resources.Event, element *resources.Element) error {
 	}
 
 	marshaledDetailsJSON, err := json.Marshal(instanceDetailsJSON)
-	fmt.Println("instanceDetailsJSON: ", string(marshaledDetailsJSON))
 
 	err = json.Unmarshal(marshaledDetailsJSON, &instanceDetails)
 	if err != nil {
@@ -43,12 +41,12 @@ func ProcEC2(event resources.Event, element *resources.Element) error {
 		launchTime = ""
 	}
 	element.Text.Content = "[+] ** Type**:   " + event.DetailType + "\n" +
-		"[+] ** Severity**:    " + alertLevel(alertSeverity) + " " + strconv.FormatFloat(alertSeverity, 'f', -1, 64) + "\n" +
+		"[+] ** Severity**:    " + Level(alertSeverity) + " " + strconv.FormatFloat(alertSeverity, 'f', -1, 64) + "\n" +
 		"[+] ** Alert Time**:    " + event.Time + "\n" +
 		"[+] ** Account**:    " + event.Account + "\n" +
 		"[+] ** Region**:    " + event.Region + "\n" +
 		"[+] ** Resource Type**:    " + resourceType + "\n" +
-		"[+] ** ID**:    " + instanceDetails.InstanceID + "\n" +
+		"[+] ** Instance ID**:    " + instanceDetails.InstanceID + "\n" +
 		"[+] ** Launch Time**:    " + launchTime + "\n" +
 		"[+] ** Action Type**:    " + event.Detail.Service.Action.ActionType + "\n" +
 		"[+] ** Description**:    " + event.Detail.Description + "\n"

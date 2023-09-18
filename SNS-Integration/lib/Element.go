@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"AWS-Lark-Bot/alert"
 	"AWS-Lark-Bot/resources"
 	"fmt"
 )
@@ -13,36 +14,30 @@ func blocked(flag bool) string {
 	}
 }
 
-func alertLevel(alertSeverity float64) string {
-	if alertSeverity >= 7.0 {
-		return "High"
-	} else if alertSeverity >= 4.0 {
-		return "Medium"
-	} else {
-		return "Low"
-	}
-}
-
 // ProcElement get the servertiy of the alert
-func ProcElement(event resources.Event, element *resources.Element) float64 {
+func ProcElement(event resources.Event, element *resources.Element) {
 	element.Tag = "div"
 	element.Text.Tag = "lark_md"
 	resourceType, ok := event.Detail.Resource["resourceType"].(string)
 	if !ok {
 		fmt.Println("Missing or invalid resourceType")
-		return 0
+		return
 	}
 
 	fmt.Println("ResourceType: ", resourceType)
 	switch resourceType {
 	case "Instance":
-		err := ProcEC2(event, element)
+		err := alert.ProcEC2(event, element)
 		if err != nil {
 			fmt.Println("Failed to process EC2 alert: ", err)
-			return 0
+			return
 		}
 	default:
-		return 0
+		err := alert.ProcGerneral(event, element)
+		if err != nil {
+			fmt.Println("Failed to process EC2 alert: ", err)
+			return
+		}
 	}
-	return 0
+	return
 }

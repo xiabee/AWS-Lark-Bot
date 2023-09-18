@@ -1,10 +1,13 @@
 package main
 
 import (
+	"AWS-Lark-Bot/alert"
 	"AWS-Lark-Bot/lib"
 	"AWS-Lark-Bot/resources"
 	"context"
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -35,10 +38,13 @@ func lambdaHandler(ctx context.Context, snsEvent events.SNSEvent) error {
 	var data resources.CardMessage
 	// card message struct
 
-	serverity := lib.ProcCard(event, &data)
-	if serverity < 0 {
-		return nil
-	}
+	serverity := alert.GetAlertServerity(event)
+	fmt.Println("serverity: ", serverity)
+	lib.ProcCard(event, &data, serverity)
+
+	//if serverity < 0 {
+	//	return nil
+	//}
 	// if serverity < 4.0, don't send message to Lark Bot
 
 	payloadBytes, err := json.Marshal(data)
@@ -55,11 +61,13 @@ func lambdaHandler(ctx context.Context, snsEvent events.SNSEvent) error {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode == http.StatusOK {
-		log.Println("The message has been successfully sent to the Feishu robot")
-	} else {
-		log.Printf("An error occurred while sending a message to the Feishu robot, status code: %d", resp.StatusCode)
-	}
+	body, err := io.ReadAll(resp.Body)
+	fmt.Println("resp: ", string(body))
+	//if resp.StatusCode == http.StatusOK {
+	//	log.Println("The message has been successfully sent to the Feishu robot")
+	//} else {
+	//	log.Printf("An error occurred while sending a message to the Feishu robot, status code: %d", resp.StatusCode)
+	//}
 
 	return nil
 }
