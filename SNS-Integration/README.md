@@ -27,6 +27,13 @@
 
 ### 设置环境变量
 
+| 环境变量    | 类型    | 值                                  | 作用                       |
+| ----------- | ------- | ----------------------------------- | -------------------------- |
+| WEBHOOK_KEY | string  | 飞书机器人 webhook url 的最后哈希串 | 触发飞书 webhook 发送消息  |
+| ALERT_LEVEL | float64 | 安全事件等级触发告警的阈值          | 超出该值的安全事件触发告警 |
+
+
+
 * 需要设置一个名为 `WEBHOOK_KEY` 的环境变量，其值为自己的飞书机器人 webhook url 的最后哈希串。
   * 例如某个机器人 webhook 为：`https://open.feishu.cn/open-apis/bot/v2/hook/abcdabcd-aaaa-bbbb-cccc-c4a8aa6ed91c`，那么需要设置一个值为 `abcdabcd-aaaa-bbbb-cccc-c4a8aa6ed91c` 的环境变量 `WEBHOOK_KEY`
 
